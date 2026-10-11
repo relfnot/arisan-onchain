@@ -1,0 +1,258 @@
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --text: #1d1b16;
+  --muted: #6b665c;
+  --border: #e4dfd4;
+  --accent: #0f766e;
+  --accent-text: #ffffff;
+  --danger: #b42318;
+  --ok: #067647;
+  --pending: #b54708;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14130f;
+    --surface: #1e1c17;
+    --text: #f2efe8;
+    --muted: #a39d90;
+    --border: #36322a;
+    --accent: #2dd4bf;
+    --accent-text: #0b1513;
+    --danger: #f97066;
+    --ok: #47cd89;
+    --pending: #fdb022;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 1.8rem;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 24px 0 12px;
+}
+
+.form h2 {
+  margin-top: 0;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.muted {
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+input,
+select {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: var(--accent);
+  color: var(--accent-text);
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+button.danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+button.small {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.badge.forming {
+  color: var(--pending);
+}
+
+.badge.active {
+  color: var(--accent);
+}
+
+.badge.completed {
+  color: var(--muted);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.stats dt {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.stats dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.members {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.members li.turn {
+  font-weight: 600;
+}
+
+.members li > * + * {
+  margin-left: 6px;
+}
+
+.mono {
+  font-family: ui-monospace, "Cascadia Code", monospace;
+}
+
+.tag {
+  font-size: 0.7rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.tag.done {
+  color: var(--ok);
+}
+
+.tag.pending {
+  color: var(--pending);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ok,
+.error {
+  font-size: 0.85rem;
+  margin: 8px 0 0;
+  word-break: break-word;
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.error {
+  color: var(--danger);
+}

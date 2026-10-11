@@ -1,0 +1,1303 @@
+{
+  "address": "9quD9grWkec8MmFB7S2jM2oUVYWVvEK2pbhnbipQodT2",
+  "metadata": {
+    "name": "arisan",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Trustless rotating savings groups (arisan) on Solana"
+  },
+  "instructions": [
+    {
+      "name": "contribute",
+      "docs": [
+        "Pay this round's contribution before the round deadline."
+      ],
+      "discriminator": [
+        82,
+        33,
+        68,
+        131,
+        32,
+        0,
+        205,
+        95
+      ],
+      "accounts": [
+        {
+          "name": "wallet",
+          "signer": true
+        },
+        {
+          "name": "group",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group.creator",
+                "account": "Group"
+              },
+              {
+                "kind": "account",
+                "path": "group.group_id",
+                "account": "Group"
+              }
+            ]
+          }
+        },
+        {
+          "name": "member",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              },
+              {
+                "kind": "account",
+                "path": "wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "wallet_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_group",
+      "docs": [
+        "Create a new group and its token vault. The creator does not join",
+        "automatically; they call `join_group` like everyone else."
+      ],
+      "discriminator": [
+        79,
+        60,
+        158,
+        134,
+        61,
+        199,
+        56,
+        248
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "group",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              },
+              {
+                "kind": "arg",
+                "path": "group_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "docs": [
+            "Classic SPL Token mints only (e.g. USDC). Token-2022 extensions such as",
+            "transfer fees would break the vault accounting, so they are rejected."
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "group_id",
+          "type": "u64"
+        },
+        {
+          "name": "contribution_amount",
+          "type": "u64"
+        },
+        {
+          "name": "collateral_amount",
+          "type": "u64"
+        },
+        {
+          "name": "max_members",
+          "type": "u8"
+        },
+        {
+          "name": "period_secs",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "join_group",
+      "docs": [
+        "Join a forming group by locking collateral. The group starts as soon",
+        "as the last seat is filled."
+      ],
+      "discriminator": [
+        121,
+        56,
+        199,
+        19,
+        250,
+        70,
+        44,
+        184
+      ],
+      "accounts": [
+        {
+          "name": "wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "group",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group.creator",
+                "account": "Group"
+              },
+              {
+                "kind": "account",
+                "path": "group.group_id",
+                "account": "Group"
+              }
+            ]
+          }
+        },
+        {
+          "name": "member",
+          "docs": [
+            "`init` fails if this wallet already joined, so a wallet holds one seat."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              },
+              {
+                "kind": "account",
+                "path": "wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "wallet_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "leave_group",
+      "docs": [
+        "Leave a group that has not started yet and get the collateral back."
+      ],
+      "discriminator": [
+        10,
+        4,
+        125,
+        28,
+        46,
+        23,
+        233,
+        29
+      ],
+      "accounts": [
+        {
+          "name": "wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "group",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group.creator",
+                "account": "Group"
+              },
+              {
+                "kind": "account",
+                "path": "group.group_id",
+                "account": "Group"
+              }
+            ]
+          }
+        },
+        {
+          "name": "member",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              },
+              {
+                "kind": "account",
+                "path": "wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "wallet_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "payout",
+      "docs": [
+        "Permissionless: once every member is settled for the round, send the",
+        "pot to the member whose turn it is and open the next round."
+      ],
+      "discriminator": [
+        149,
+        140,
+        194,
+        236,
+        174,
+        189,
+        6,
+        239
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "docs": [
+            "Anyone can crank the payout; funds only ever go to the scheduled member."
+          ],
+          "signer": true
+        },
+        {
+          "name": "group",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group.creator",
+                "account": "Group"
+              },
+              {
+                "kind": "account",
+                "path": "group.group_id",
+                "account": "Group"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_member",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              },
+              {
+                "kind": "account",
+                "path": "recipient_member.wallet",
+                "account": "Member"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "recipient_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "slash_defaulter",
+      "docs": [
+        "Permissionless: after the deadline, cover a member's missed",
+        "contribution from their collateral."
+      ],
+      "discriminator": [
+        70,
+        94,
+        170,
+        113,
+        252,
+        54,
+        188,
+        174
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "docs": [
+            "Anyone can crank a slash once the deadline has passed."
+          ],
+          "signer": true
+        },
+        {
+          "name": "group",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group.creator",
+                "account": "Group"
+              },
+              {
+                "kind": "account",
+                "path": "group.group_id",
+                "account": "Group"
+              }
+            ]
+          }
+        },
+        {
+          "name": "member",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              },
+              {
+                "kind": "account",
+                "path": "member.wallet",
+                "account": "Member"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "withdraw_collateral",
+      "docs": [
+        "After the final round, return a member's remaining collateral and",
+        "close their member account."
+      ],
+      "discriminator": [
+        115,
+        135,
+        168,
+        106,
+        139,
+        214,
+        138,
+        150
+      ],
+      "accounts": [
+        {
+          "name": "wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "group",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  114,
+                  111,
+                  117,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group.creator",
+                "account": "Group"
+              },
+              {
+                "kind": "account",
+                "path": "group.group_id",
+                "account": "Group"
+              }
+            ]
+          }
+        },
+        {
+          "name": "member",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "group"
+              },
+              {
+                "kind": "account",
+                "path": "wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "relations": [
+            "group"
+          ]
+        },
+        {
+          "name": "wallet_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Group",
+      "discriminator": [
+        209,
+        249,
+        208,
+        63,
+        182,
+        89,
+        186,
+        254
+      ]
+    },
+    {
+      "name": "Member",
+      "discriminator": [
+        54,
+        19,
+        162,
+        21,
+        29,
+        166,
+        17,
+        198
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "CollateralWithdrawn",
+      "discriminator": [
+        51,
+        224,
+        133,
+        106,
+        74,
+        173,
+        72,
+        82
+      ]
+    },
+    {
+      "name": "Contributed",
+      "discriminator": [
+        196,
+        199,
+        157,
+        136,
+        180,
+        222,
+        100,
+        118
+      ]
+    },
+    {
+      "name": "DefaulterSlashed",
+      "discriminator": [
+        84,
+        158,
+        57,
+        30,
+        243,
+        251,
+        213,
+        125
+      ]
+    },
+    {
+      "name": "GroupCompleted",
+      "discriminator": [
+        130,
+        120,
+        21,
+        214,
+        77,
+        155,
+        227,
+        102
+      ]
+    },
+    {
+      "name": "GroupCreated",
+      "discriminator": [
+        132,
+        94,
+        184,
+        198,
+        77,
+        165,
+        13,
+        26
+      ]
+    },
+    {
+      "name": "GroupStarted",
+      "discriminator": [
+        22,
+        160,
+        223,
+        146,
+        57,
+        205,
+        202,
+        221
+      ]
+    },
+    {
+      "name": "MemberJoined",
+      "discriminator": [
+        156,
+        199,
+        149,
+        88,
+        193,
+        203,
+        191,
+        210
+      ]
+    },
+    {
+      "name": "MemberLeft",
+      "discriminator": [
+        48,
+        83,
+        72,
+        92,
+        111,
+        227,
+        133,
+        142
+      ]
+    },
+    {
+      "name": "PaidOut",
+      "discriminator": [
+        6,
+        137,
+        209,
+        225,
+        252,
+        53,
+        249,
+        252
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidMemberCount",
+      "msg": "Member count must be between 2 and 20"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidPeriod",
+      "msg": "Round period is outside the allowed range"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidContribution",
+      "msg": "Contribution amount must be greater than zero"
+    },
+    {
+      "code": 6003,
+      "name": "CollateralTooLow",
+      "msg": "Collateral must be at least one contribution"
+    },
+    {
+      "code": 6004,
+      "name": "GroupNotForming",
+      "msg": "Group is not accepting members"
+    },
+    {
+      "code": 6005,
+      "name": "GroupNotActive",
+      "msg": "Group is not active"
+    },
+    {
+      "code": 6006,
+      "name": "GroupNotCompleted",
+      "msg": "Group has not completed yet"
+    },
+    {
+      "code": 6007,
+      "name": "GroupFull",
+      "msg": "Group is full"
+    },
+    {
+      "code": 6008,
+      "name": "AlreadySettledRound",
+      "msg": "Member has already settled this round"
+    },
+    {
+      "code": 6009,
+      "name": "RoundDeadlinePassed",
+      "msg": "Round deadline has passed"
+    },
+    {
+      "code": 6010,
+      "name": "RoundStillOpen",
+      "msg": "Round is still open for contributions"
+    },
+    {
+      "code": 6011,
+      "name": "RoundNotSettled",
+      "msg": "Not every member has settled this round"
+    },
+    {
+      "code": 6012,
+      "name": "WrongRecipient",
+      "msg": "Recipient is not the member whose turn it is"
+    },
+    {
+      "code": 6013,
+      "name": "AlreadyReceived",
+      "msg": "Member has already received a payout"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidTokenAccount",
+      "msg": "Token account does not belong to the expected owner or mint"
+    },
+    {
+      "code": 6015,
+      "name": "MathOverflow",
+      "msg": "Arithmetic overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "CollateralWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contributed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "round",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DefaulterSlashed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "round",
+            "type": "u8"
+          },
+          {
+            "name": "covered",
+            "type": "u64"
+          },
+          {
+            "name": "shortfall",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Group",
+      "docs": [
+        "PDA: [\"group\", creator, group_id (u64 LE)]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "group_id",
+            "type": "u64"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "docs": [
+              "PDA token account [\"vault\", group] owned by this group."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "contribution_amount",
+            "type": "u64"
+          },
+          {
+            "name": "collateral_amount",
+            "type": "u64"
+          },
+          {
+            "name": "period_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_members",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "GroupStatus"
+              }
+            }
+          },
+          {
+            "name": "current_round",
+            "docs": [
+              "Zero-based index into `members` of whose turn it is."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "round_deadline",
+            "docs": [
+              "Unix timestamp after which unpaid members can be slashed."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "round_settled_count",
+            "docs": [
+              "Members who have contributed or been slashed this round."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "round_shortfall",
+            "docs": [
+              "Missed contributions this round that collateral could not cover."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "members",
+            "docs": [
+              "Wallets in join order, which is also the payout order."
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GroupCompleted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GroupCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "contribution_amount",
+            "type": "u64"
+          },
+          {
+            "name": "collateral_amount",
+            "type": "u64"
+          },
+          {
+            "name": "max_members",
+            "type": "u8"
+          },
+          {
+            "name": "period_secs",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GroupStarted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "first_deadline",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GroupStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Forming"
+          },
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Completed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Member",
+      "docs": [
+        "PDA: [\"member\", group, wallet]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral",
+            "docs": [
+              "Collateral still locked in the vault for this member."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "rounds_settled",
+            "docs": [
+              "Rounds this member has settled, by contributing or being slashed.",
+              "Equal to `group.current_round` means this round is still unpaid."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "missed_rounds",
+            "type": "u8"
+          },
+          {
+            "name": "has_received",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MemberJoined",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "position",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MemberLeft",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaidOut",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "round",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}
