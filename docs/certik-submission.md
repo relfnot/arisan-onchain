@@ -4,7 +4,7 @@
 
 ## Links
 - Colosseum submission: [link]
-- GitHub: [https://github.com/<you>/arisan-onchain]
+- GitHub: https://github.com/relfnot/arisan-onchain
 - Devnet program ID: `9quD9grWkec8MmFB7S2jM2oUVYWVvEK2pbhnbipQodT2` ([explorer](https://explorer.solana.com/address/9quD9grWkec8MmFB7S2jM2oUVYWVvEK2pbhnbipQodT2?cluster=devnet)). A full group lifecycle (create, join, contribute, payout, withdraw) has been run on devnet with `scripts/devnet-smoke.mjs`.
 - Demo: [Vercel URL / video]
 
