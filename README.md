@@ -2,7 +2,7 @@
 
 Trustless rotating savings groups (ROSCA, known in Indonesia as *arisan*) on Solana.
 
-**Devnet:** [`9quD9grWkec8MmFB7S2jM2oUVYWVvEK2pbhnbipQodT2`](https://explorer.solana.com/address/9quD9grWkec8MmFB7S2jM2oUVYWVvEK2pbhnbipQodT2?cluster=devnet)
+**Live app (devnet):** https://relfnot.github.io/arisan-onchain/ · **Program:** [`9quD9grWkec8MmFB7S2jM2oUVYWVvEK2pbhnbipQodT2`](https://explorer.solana.com/address/9quD9grWkec8MmFB7S2jM2oUVYWVvEK2pbhnbipQodT2?cluster=devnet)
 
 Arisan is how millions of Indonesians save: a group pays in every month and one member takes the whole pot each round. It runs on trust in a *bandar* (organizer) who holds the money, and "bandar arisan kabur" (organizer ran off with the money) is a recurring headline. This program replaces the bandar with a vault:
 
