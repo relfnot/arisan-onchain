@@ -133,3 +133,30 @@ export function formatDuration(secs: number): string {
   if (m) return `${m}m ${s}s`;
   return `${s}s`;
 }
+
+const CLUSTER_PARAM = RPC_URL.includes("devnet")
+  ? "?cluster=devnet"
+  : RPC_URL.includes("testnet")
+    ? "?cluster=testnet"
+    : "";
+
+export const explorerTx = (sig: string) => `https://explorer.solana.com/tx/${sig}${CLUSTER_PARAM}`;
+export const explorerAddress = (key: PublicKey) =>
+  `https://explorer.solana.com/address/${key.toBase58()}${CLUSTER_PARAM}`;
+
+export const tokenLabel = (mint: PublicKey) =>
+  mint.toBase58() === DEFAULT_MINT ? "USDC" : "tokens";
+
+/** Turns wallet and Anchor errors into one readable sentence. */
+export function friendlyError(err: unknown): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const e = err as any;
+  const anchorMsg: string | undefined = e?.error?.errorMessage;
+  if (anchorMsg) return anchorMsg;
+  const msg: string = e instanceof Error ? e.message : String(err);
+  if (/user rejected|rejected the request/i.test(msg)) return "Transaction cancelled in the wallet.";
+  if (/insufficient funds|insufficient lamports/i.test(msg)) return "Not enough SOL or tokens for this transaction.";
+  const custom = msg.match(/Error Message: ([^.]+)\./);
+  if (custom) return custom[1];
+  return msg.length > 180 ? `${msg.slice(0, 180)}…` : msg;
+}

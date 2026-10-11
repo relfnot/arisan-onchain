@@ -11,3 +11,4 @@ app/tsconfig.tsbuildinfo
 app/out
 .pitch-deck
 submission-notes.md
+.claude

@@ -2,6 +2,7 @@
 
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { ToastProvider } from "@/components/Toasts";
 import { RPC_URL } from "@/lib/arisan";
 
 export function WalletProviders({ children }: { children: React.ReactNode }) {
@@ -10,7 +11,9 @@ export function WalletProviders({ children }: { children: React.ReactNode }) {
   return (
     <ConnectionProvider endpoint={RPC_URL}>
       <WalletProvider wallets={[]} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <WalletModalProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );
