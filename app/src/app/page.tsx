@@ -88,8 +88,11 @@ export default function Home() {
     }),
     [groups, isMine],
   );
+  // While the wallet is briefly disconnected (e.g. switching accounts), show all
+  // groups instead of an empty "My groups"; the choice returns on reconnect.
+  const shown: Filter = filter === "mine" && !wallet ? "all" : filter;
   const visible = groups.filter((g) =>
-    filter === "all" ? true : filter === "mine" ? isMine(g) : g.status === filter,
+    shown === "all" ? true : shown === "mine" ? isMine(g) : g.status === shown,
   );
   const memberCount = groups.reduce((n, g) => n + g.members.length, 0);
 
@@ -180,8 +183,8 @@ export default function Home() {
               <button
                 key={f.key}
                 role="tab"
-                aria-selected={filter === f.key}
-                className={`tab ${filter === f.key ? "active" : ""}`}
+                aria-selected={shown === f.key}
+                className={`tab ${shown === f.key ? "active" : ""}`}
                 onClick={() => setFilter(f.key)}
               >
                 {f.label}

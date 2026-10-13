@@ -98,6 +98,9 @@ export function GroupCard({ program, group, decimals, wallet, onConnect, onChang
       toast({ kind: "success", title: success, href: explorerTx(sig) });
       await loadMembers();
       onChanged();
+      // RPC nodes can lag a moment behind the confirmed transaction; refresh
+      // again shortly so the next action appears without waiting for the poll.
+      setTimeout(onChanged, 2500);
     } catch (err) {
       toast({ kind: "error", title: `${label} failed`, body: friendlyError(err) });
     } finally {
