@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BN } from "@coral-xyz/anchor";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
@@ -42,9 +42,21 @@ export function GroupCard({ program, group, decimals, wallet, onConnect, onChang
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
   const [busy, setBusy] = useState<string | null>(null);
 
+  // Member accounts only change when the group's round state does, so key the
+  // fetch on that instead of on every 15-second refresh of the list.
+  const groupRef = useRef(group);
+  groupRef.current = group;
+  const memberKey = [
+    group.publicKey.toBase58(),
+    group.status,
+    group.currentRound,
+    group.roundSettledCount,
+    group.members.length,
+  ].join(":");
   const loadMembers = useCallback(async () => {
-    setMembers(await fetchMembers(program, group));
-  }, [program, group]);
+    setMembers(await fetchMembers(program, groupRef.current));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [program, memberKey]);
 
   useEffect(() => {
     loadMembers().catch(() => setMembers([]));

@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useWalletModal, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { getMint } from "@solana/spl-token";
+import { PublicKey } from "@solana/web3.js";
 import { CreateGroupForm } from "@/components/CreateGroupForm";
 import { GroupCard } from "@/components/GroupCard";
 import { HeroArt, Logo, Modal } from "@/components/ui";
@@ -34,6 +35,7 @@ export default function Home() {
 
   const [groups, setGroups] = useState<GroupData[]>([]);
   const [decimals, setDecimals] = useState<Record<string, number>>({});
+  const decimalsRef = useRef<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
@@ -45,15 +47,18 @@ export default function Home() {
   const refresh = useCallback(async () => {
     try {
       const list = await fetchGroups(program);
-      setGroups(list);
-      const mints = [...new Set(list.map((g) => g.mint.toBase58()))];
+      // Mint decimals never change, so only fetch mints we haven't seen. Resolve
+      // them before showing the list so amounts never flash in raw units.
+      const known = decimalsRef.current;
+      const missing = [...new Set(list.map((g) => g.mint.toBase58()))].filter((m) => !(m in known));
       const entries = await Promise.all(
-        mints.map(async (m) => {
-          const info = await getMint(connection, list.find((g) => g.mint.toBase58() === m)!.mint);
-          return [m, info.decimals] as const;
-        }),
+        missing.map(async (m) => [m, (await getMint(connection, new PublicKey(m))).decimals] as const),
       );
-      setDecimals(Object.fromEntries(entries));
+      if (entries.length) {
+        decimalsRef.current = { ...known, ...Object.fromEntries(entries) };
+        setDecimals(decimalsRef.current);
+      }
+      setGroups(list);
       setError(null);
     } catch (e) {
       setError(friendlyError(e));
