@@ -63,10 +63,11 @@ export function GroupCard({ program, group, decimals, wallet, onConnect, onChang
   const secondsLeft = deadline - now;
   const pastDeadline = group.status === "active" && secondsLeft < 0;
   const myIndex = wallet ? group.members.findIndex((m) => m.equals(wallet)) : -1;
-  const me = myIndex >= 0 ? members[myIndex] : null;
+  // `members` can lag one refresh behind `group.members` right after a join.
+  const me = myIndex >= 0 ? (members[myIndex] ?? null) : null;
   const recipient = group.status === "active" ? group.members[group.currentRound] : undefined;
   const ata = (owner: PublicKey) => getAssociatedTokenAddressSync(group.mint, owner);
-  const settledThisRound = (m: MemberData | null) => m !== null && m.roundsSettled > group.currentRound;
+  const settledThisRound = (m: MemberData | null | undefined) => !!m && m.roundsSettled > group.currentRound;
   const roundSettled = group.status === "active" && group.roundSettledCount === memberCount;
   const iSettled = settledThisRound(me);
 
@@ -285,7 +286,7 @@ export function GroupCard({ program, group, decimals, wallet, onConnect, onChang
       {memberCount > 0 && (
         <ul className="gc-members">
           {group.members.map((w, i) => {
-            const m = members[i];
+            const m = members[i] ?? null;
             const isMe = wallet?.equals(w);
             const isTurn = recipient?.equals(w);
             return (
